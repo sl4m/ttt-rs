@@ -3,4 +3,6 @@
 // TODO: remove later
 #![allow(dead_code)]
 
+mod board;
+
 mod tests {}
