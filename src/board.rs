@@ -70,15 +70,11 @@ impl Board {
     const CELL_WALL: &'static str = "---";
 
     fn grid_line(&self) -> String {
-        let mut line = String::new();
-        for n in 0..self.row_size {
-            if n > 0 {
-                line.push('-');
-            }
-            line.push_str(Self::CELL_WALL);
+        let mut line_pieces: Vec<&str> = Vec::new();
+        for _ in 0..self.row_size {
+            line_pieces.push(Self::CELL_WALL);
         }
-        line.push_str("\n");
-        line
+        format!("{}\n", line_pieces.join("+"))
     }
 }
 
@@ -87,7 +83,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_creates_a_board() {
+    fn it_gets_row_size() {
         let board = Board::new(9);
         assert_eq!(board.row_size(), 3);
     }
@@ -110,21 +106,26 @@ mod tests {
 
     #[test]
     fn it_can_check_for_board_equality() {
-        assert_eq!(Board::new(9), Board::new(9));
+        let mut board1 = Board::new(9);
+        let mut board2 = Board::new(9);
+        assert_eq!(board1, board2);
+        board1.set_mark_at(0, Mark::O);
+        board2.set_mark_at(0, Mark::O);
+        assert_eq!(board1, board2);
         assert_ne!(Board::new(9), Board::new(16));
     }
 
     #[test]
-    fn it_displays_the_board_as_a_string() {
+    fn it_displays_the_board_as_string() {
         let mut board = Board::new(9);
         for n in 0..9 {
             board.set_mark_at(n, Mark::O);
         }
 
         let board_string = r#" O | O | O
------------
+---+---+---
  O | O | O
------------
+---+---+---
  O | O | O
 "#;
 

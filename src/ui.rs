@@ -75,16 +75,18 @@ mod tests {
     fn it_displays_the_board() {
         let mut std_io = DoubleStdIo::new(vec![]);
         let ui = Ui::new(&std_io);
-        let mut board = Board::new(9);
-        for n in 0..9 {
+        let mut board = Board::new(16);
+        for n in 0..16 {
             board.set_mark_at(n, Mark::O);
         }
 
-        let board_string = r#" O | O | O
------------
- O | O | O
------------
- O | O | O
+        let board_string = r#" O | O | O | O
+---+---+---+---
+ O | O | O | O
+---+---+---+---
+ O | O | O | O
+---+---+---+---
+ O | O | O | O
 "#;
         ui.display_board(&board);
         assert_eq!(std_io.pop_output(), board_string);
