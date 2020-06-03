@@ -4,6 +4,7 @@
 #![allow(dead_code)]
 
 mod board;
+mod mark;
 mod ui;
 
 mod tests {}

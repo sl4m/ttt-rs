@@ -1,19 +1,5 @@
+use crate::mark::Mark;
 use std::fmt;
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum Mark {
-    O,
-    X,
-}
-
-impl fmt::Display for Mark {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match *self {
-            Self::O => write!(f, "O"),
-            Self::X => write!(f, "X"),
-        }
-    }
-}
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) struct Board {
@@ -36,13 +22,32 @@ impl Board {
         self.grid.iter()
     }
 
-    pub fn mark_at(&self, index: usize) -> Option<&Mark> {
+    pub fn is_occupied(&self, index: usize) -> bool {
+        match self._mark(index) {
+            Some(_) => true,
+            None => false,
+        }
+    }
+
+    pub fn mark(&self, index: usize) -> Option<&Mark> {
+        self._mark(index)
+    }
+
+    pub fn reset_mark(&mut self, index: usize) -> Option<Mark> {
+        self._set_mark(index, None)
+    }
+
+    pub fn set_mark(&mut self, index: usize, mark: Mark) -> Option<Mark> {
+        self._set_mark(index, Some(mark))
+    }
+
+    fn _mark(&self, index: usize) -> Option<&Mark> {
         self.grid.get(index).unwrap().as_ref()
     }
 
-    pub fn set_mark_at(&mut self, index: usize, mark: Mark) -> Option<Mark> {
+    fn _set_mark(&mut self, index: usize, mark: Option<Mark>) -> Option<Mark> {
         let old_mark = self.grid[index].take();
-        self.grid[index] = Some(mark);
+        self.grid[index] = mark;
         old_mark
     }
 }
@@ -85,7 +90,7 @@ mod tests {
     #[test]
     fn it_gets_row_size() {
         let board = Board::new(9);
-        assert_eq!(board.row_size(), 3);
+        assert_eq!(3, board.row_size());
     }
 
     #[test]
@@ -99,9 +104,25 @@ mod tests {
     #[test]
     fn it_sets_and_gets_mark_at_cell() {
         let mut board = Board::new(9);
-        assert_eq!(None, board.mark_at(0));
-        assert_eq!(None, board.set_mark_at(0, Mark::O));
-        assert_eq!(Some(&Mark::O), board.mark_at(0));
+        assert_eq!(None, board.mark(0));
+        assert_eq!(None, board.set_mark(0, Mark::O));
+        assert_eq!(Some(&Mark::O), board.mark(0));
+    }
+
+    #[test]
+    fn it_checks_if_cell_is_occupied() {
+        let mut board = Board::new(9);
+        assert_eq!(false, board.is_occupied(0));
+        assert_eq!(None, board.set_mark(0, Mark::O));
+        assert_eq!(true, board.is_occupied(0));
+    }
+
+    #[test]
+    fn it_clears_cell() {
+        let mut board = Board::new(9);
+        board.set_mark(0, Mark::X);
+        assert_eq!(Some(Mark::X), board.reset_mark(0));
+        assert_eq!(None, board.mark(0));
     }
 
     #[test]
@@ -109,8 +130,8 @@ mod tests {
         let mut board1 = Board::new(9);
         let mut board2 = Board::new(9);
         assert_eq!(board1, board2);
-        board1.set_mark_at(0, Mark::O);
-        board2.set_mark_at(0, Mark::O);
+        board1.set_mark(0, Mark::O);
+        board2.set_mark(0, Mark::O);
         assert_eq!(board1, board2);
         assert_ne!(Board::new(9), Board::new(16));
     }
@@ -119,7 +140,7 @@ mod tests {
     fn it_displays_the_board_as_string() {
         let mut board = Board::new(9);
         for n in 0..9 {
-            board.set_mark_at(n, Mark::O);
+            board.set_mark(n, Mark::O);
         }
 
         let board_string = r#" O | O | O
@@ -129,6 +150,6 @@ mod tests {
  O | O | O
 "#;
 
-        assert_eq!(format!("{}", board), board_string);
+        assert_eq!(board_string, format!("{}", board));
     }
 }

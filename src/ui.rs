@@ -1,5 +1,3 @@
-use crate::board::Board;
-
 pub trait StdIo {
     fn println(&self, text: &str);
     fn prompt(&self) -> String;
@@ -21,10 +19,6 @@ where
         self.io.prompt()
     }
 
-    pub fn display_board(&self, board: &Board) {
-        self.io.println(&board.to_string());
-    }
-
     pub fn print(&self, text: &str) {
         self.io.println(text);
     }
@@ -33,7 +27,6 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::board::Mark;
     use std::cell::RefCell;
 
     struct DoubleStdIo<'a> {
@@ -68,28 +61,7 @@ mod tests {
     fn it_prompts_for_move() {
         let std_io = DoubleStdIo::new(vec!["1"]);
         let ui = Ui::new(&std_io);
-        assert_eq!(ui.prompt_for_move(), "1".to_owned());
-    }
-
-    #[test]
-    fn it_displays_the_board() {
-        let mut std_io = DoubleStdIo::new(vec![]);
-        let ui = Ui::new(&std_io);
-        let mut board = Board::new(16);
-        for n in 0..16 {
-            board.set_mark_at(n, Mark::O);
-        }
-
-        let board_string = r#" O | O | O | O
----+---+---+---
- O | O | O | O
----+---+---+---
- O | O | O | O
----+---+---+---
- O | O | O | O
-"#;
-        ui.display_board(&board);
-        assert_eq!(std_io.pop_output(), board_string);
+        assert_eq!("1".to_owned(), ui.prompt_for_move());
     }
 
     #[test]
@@ -98,6 +70,6 @@ mod tests {
         let ui = Ui::new(&std_io);
         let text = "Hello world";
         ui.print(text);
-        assert_eq!(std_io.pop_output(), text);
+        assert_eq!(text, std_io.pop_output());
     }
 }
