@@ -3,6 +3,7 @@
 // TODO: remove later
 #![allow(dead_code)]
 
+mod ai;
 mod board;
 mod mark;
 mod ui;

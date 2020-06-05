@@ -1,13 +1,13 @@
 use std::fmt;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum Mark {
     O,
     X,
 }
 
 impl Mark {
-    fn opposite(&self) -> Self {
+    pub fn opposite(&self) -> Self {
         match &*self {
             Self::O => Self::X,
             Self::X => Self::O,
