@@ -1,14 +1,14 @@
-use crate::std_io::StdIo;
+use crate::std_io::{console_io::ConsoleIo, StdIo};
 
-pub(crate) struct Ui<'a, T: StdIo> {
-    io: &'a T,
+pub(crate) struct Ui<T: StdIo> {
+    io: T,
 }
 
-impl<'a, T> Ui<'a, T>
+impl<T> Ui<T>
 where
     T: StdIo,
 {
-    pub fn new(io: &T) -> Ui<'_, T> {
+    pub fn new(io: T) -> Ui<T> {
         Ui { io }
     }
 
@@ -20,6 +20,17 @@ where
     pub fn print(&self, text: &str) {
         self.io.println(text);
     }
+
+    fn io_mut(&mut self) -> &mut T {
+        &mut self.io
+    }
+}
+
+impl Ui<ConsoleIo> {
+    pub fn with_defaults() -> Ui<ConsoleIo> {
+        let io = ConsoleIo::new();
+        Ui { io }
+    }
 }
 
 #[cfg(test)]
@@ -29,19 +40,19 @@ mod tests {
 
     #[test]
     fn it_prompts_with_custom_text() {
-        let mut std_io = DoubleStdIo::new(vec!["1"]);
-        let ui = Ui::new(&std_io);
+        let std_io = DoubleStdIo::new(vec!["1"]);
+        let mut ui = Ui::new(std_io);
         let text = "Enter a move";
         assert_eq!("1".to_owned(), ui.prompt_with_text(text));
-        assert_eq!(text, std_io.pop_output());
+        assert_eq!(text, ui.io_mut().pop_output());
     }
 
     #[test]
     fn it_prints_custom_text() {
-        let mut std_io = DoubleStdIo::new(vec![]);
-        let ui = Ui::new(&std_io);
+        let std_io = DoubleStdIo::new(vec![]);
+        let mut ui = Ui::new(std_io);
         let text = "Computer makes a move";
         ui.print(text);
-        assert_eq!(text, std_io.pop_output());
+        assert_eq!(text, ui.io_mut().pop_output());
     }
 }

@@ -4,22 +4,31 @@ use crate::player::Player;
 use crate::std_io::StdIo;
 use crate::ui::Ui;
 
-pub(crate) struct Human {
+pub(crate) struct Human<T: StdIo> {
     mark: Mark,
+    ui: Ui<T>,
 }
 
-impl Human {
+impl<T> Human<T>
+where
+    T: StdIo,
+{
     const PROMPT_MESSAGE: &'static str = "Make your move";
 
-    pub fn new(mark: Mark) -> Self {
-        Self { mark }
+    pub fn new(mark: Mark, ui: Ui<T>) -> Human<T> {
+        Human { mark, ui }
     }
 }
 
-impl Player for Human {
-    fn get_move<T: StdIo>(&self, _board: &Board, ui: &Ui<'_, T>) -> usize {
+impl<T> Player for Human<T>
+where
+    T: StdIo,
+{
+    fn get_move(&self, _board: &Board) -> usize {
         loop {
-            let move_str = ui.prompt_with_text(&format!("{}, {}", Self::PROMPT_MESSAGE, self.mark));
+            let move_str =
+                self.ui
+                    .prompt_with_text(&format!("{}, {}", Self::PROMPT_MESSAGE, self.mark));
             if let Ok(value) = move_str.parse::<usize>() {
                 break value;
             }
@@ -38,24 +47,26 @@ mod tests {
 
     #[test]
     fn it_returns_the_mark() {
-        assert_eq!(&Mark::X, new_human().mark());
+        let std_io = DoubleStdIo::new(vec!["1"]);
+        let ui = Ui::new(std_io);
+        assert_eq!(&Mark::X, new_human(ui).mark());
     }
 
     #[test]
     fn it_prompts_for_a_valid_move() {
         let std_io = DoubleStdIo::new(vec!["1"]);
-        let ui = Ui::new(&std_io);
-        assert_eq!(1, new_human().get_move(&new_board(), &ui));
+        let ui = Ui::new(std_io);
+        assert_eq!(1, new_human(ui).get_move(&new_board()));
     }
 
     #[test]
     fn it_retries_if_move_is_invalid() {
         let std_io = DoubleStdIo::new(vec!["2", "bad"]);
-        let ui = Ui::new(&std_io);
-        assert_eq!(2, new_human().get_move(&new_board(), &ui));
+        let ui = Ui::new(std_io);
+        assert_eq!(2, new_human(ui).get_move(&new_board()));
     }
 
-    fn new_human() -> Human {
-        Human::new(Mark::X)
+    fn new_human(ui: Ui<DoubleStdIo<'_>>) -> Human<DoubleStdIo<'_>> {
+        Human::new(Mark::X, ui)
     }
 }

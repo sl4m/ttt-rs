@@ -4,7 +4,7 @@ use std::io::{self, Read};
 pub(crate) struct ConsoleIo;
 
 impl ConsoleIo {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {}
     }
 }
