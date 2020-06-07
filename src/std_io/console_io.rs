@@ -1,5 +1,5 @@
 use crate::std_io::StdIo;
-use std::io::{self, Read};
+use std::io;
 
 pub(crate) struct ConsoleIo;
 
@@ -17,11 +17,8 @@ impl StdIo for ConsoleIo {
 
     fn prompt(&self) -> String {
         let mut buffer = String::new();
-        let stdin = io::stdin();
-        let mut handle = stdin.lock();
-
-        match handle.read_to_string(&mut buffer) {
-            Ok(_) => buffer,
+        match io::stdin().read_line(&mut buffer) {
+            Ok(_) => buffer.trim().to_owned(),
             Err(e) => panic!("Could not read from stdin, {}", e),
         }
     }

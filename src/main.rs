@@ -1,1 +1,3 @@
-pub fn main() {}
+pub fn main() {
+    ttt_rs::run();
+}

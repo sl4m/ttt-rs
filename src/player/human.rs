@@ -35,8 +35,8 @@ where
         }
     }
 
-    fn mark(&self) -> &Mark {
-        &self.mark
+    fn mark(&self) -> Mark {
+        self.mark
     }
 }
 
@@ -47,16 +47,16 @@ mod tests {
 
     #[test]
     fn it_returns_the_mark() {
-        let std_io = DoubleStdIo::new(vec!["1"]);
+        let std_io = DoubleStdIo::new(vec![]);
         let ui = Ui::new(std_io);
-        assert_eq!(&Mark::X, new_human(ui).mark());
+        assert_eq!(Mark::X, new_human(ui).mark());
     }
 
     #[test]
     fn it_prompts_for_a_valid_move() {
-        let std_io = DoubleStdIo::new(vec!["1"]);
+        let std_io = DoubleStdIo::new(vec!["0"]);
         let ui = Ui::new(std_io);
-        assert_eq!(1, new_human(ui).get_move(&new_board()));
+        assert_eq!(0, new_human(ui).get_move(&new_board()));
     }
 
     #[test]

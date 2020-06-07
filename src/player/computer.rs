@@ -43,8 +43,8 @@ where
         self.ai.search(board, self.mark)
     }
 
-    fn mark(&self) -> &Mark {
-        &self.mark
+    fn mark(&self) -> Mark {
+        self.mark
     }
 }
 
@@ -76,7 +76,7 @@ mod tests {
     fn it_returns_the_mark() {
         let std_io = DoubleStdIo::new(vec![]);
         let ui = Ui::new(std_io);
-        assert_eq!(&Mark::X, new_computer(vec![], ui).mark());
+        assert_eq!(Mark::X, new_computer(vec![], ui).mark());
     }
 
     #[test]
