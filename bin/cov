@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+if !(which grcov > /dev/null)
+then
+  echo "Install grcov before continuing"
+  exit 1
+fi
+
+if !(cargo +nightly --version 2> /dev/null)
+then
+  echo "Install Rust nightly before continuing"
+  exit 1
+fi
+
+export CARGO_INCREMENTAL=0
+export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+export RUSTDOCFLAGS="-Cpanic=abort"
+
+echo "Building and testing..."
+cargo clean
+cargo +nightly build
+cargo +nightly test
+
+echo "Generating coverage report..."
+grcov ./target/debug/ -s . -t html --llvm --branch --ignore-not-existing -o ./target/debug/coverage/
+
+echo
+echo "Navigate to target/debug/coverage and run"
+echo "$ python -m SimpleHTTPServer"
