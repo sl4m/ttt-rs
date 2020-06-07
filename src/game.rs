@@ -57,6 +57,6 @@ impl Game<ConsoleIo> {
             Box::new(Human::new(Mark::X, Ui::with_defaults())),
             Box::new(Computer::with_defaults(Mark::O, Ui::with_defaults())),
         ];
-        Game { board, players, ui }
+        Self::new(board, players, ui)
     }
 }

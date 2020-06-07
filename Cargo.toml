@@ -2,4 +2,5 @@
 name = "ttt-rs"
 version = "0.1.0"
 authors = ["skim <skim@swainslane.co>"]
+repository = "https://github.com/sl4m/ttt-rs"
 edition = "2018"

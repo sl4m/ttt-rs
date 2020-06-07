@@ -29,10 +29,12 @@ impl Board {
     }
 
     pub fn row_size(&self) -> usize {
+        #![allow(dead_code)]
         self.row_size
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Option<Mark>> {
+        #![allow(dead_code)]
         self.grid.iter()
     }
 
@@ -84,6 +86,7 @@ impl Board {
     }
 
     fn win_combos(&self) -> &Vec<Vec<usize>> {
+        #![allow(dead_code)]
         &self.win_combos
     }
 

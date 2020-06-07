@@ -22,6 +22,7 @@ where
     }
 
     fn io_mut(&mut self) -> &mut T {
+        #![allow(dead_code)]
         &mut self.io
     }
 }
@@ -29,7 +30,7 @@ where
 impl Ui<ConsoleIo> {
     pub fn with_defaults() -> Ui<ConsoleIo> {
         let io = ConsoleIo::new();
-        Ui { io }
+        Self::new(io)
     }
 }
 

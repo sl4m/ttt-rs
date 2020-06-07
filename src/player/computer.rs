@@ -29,7 +29,7 @@ where
 {
     pub fn with_defaults(mark: Mark, ui: Ui<U>) -> Computer<Negamax, U> {
         let ai = Negamax::new();
-        Computer { ai, mark, ui }
+        Self::new(ai, mark, ui)
     }
 }
 
