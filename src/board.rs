@@ -2,7 +2,7 @@ use crate::mark::Mark;
 use std::fmt;
 
 #[derive(Clone, Debug)]
-pub(crate) struct Board {
+pub struct Board {
     grid: Vec<Option<Mark>>,
     row_size: usize,
     size: usize,

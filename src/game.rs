@@ -2,9 +2,12 @@ use crate::board::Board;
 use crate::mark::Mark;
 use crate::player::{computer::Computer, human::Human, Player};
 use crate::std_io::{console_io::ConsoleIo, StdIo};
+use crate::strings;
 use crate::ui::Ui;
+use core::fmt::Debug;
 
-pub(crate) struct Game<U: StdIo> {
+#[derive(Debug)]
+pub struct Game<U: StdIo> {
     board: Board,
     players: Vec<Box<dyn Player>>,
     ui: Ui<U>,
@@ -14,9 +17,6 @@ impl<U> Game<U>
 where
     U: StdIo,
 {
-    const WIN_MESSAGE: &'static str = "The winner is";
-    const DRAW_MESSAGE: &'static str = "It is a draw";
-
     pub fn new(board: Board, players: Vec<Box<dyn Player>>, ui: Ui<U>) -> Self {
         Game { board, players, ui }
     }
@@ -38,10 +38,15 @@ where
 
         self.ui.print(&self.board.to_string());
         if let Some(winner) = self.board.winner() {
-            self.ui.print(&format!("{} {}", Self::WIN_MESSAGE, winner));
+            self.ui
+                .print(&format!("{} {}", strings::WIN_MESSAGE, winner));
         } else {
-            self.ui.print(Self::DRAW_MESSAGE);
+            self.ui.print(strings::DRAW_MESSAGE);
         }
+    }
+
+    pub fn ui_mut(&mut self) -> &mut Ui<U> {
+        &mut self.ui
     }
 
     fn is_valid_move(&self, player_move: usize) -> bool {
@@ -58,5 +63,11 @@ impl Game<ConsoleIo> {
             Box::new(Computer::with_defaults(Mark::O, Ui::with_defaults())),
         ];
         Self::new(board, players, ui)
+    }
+}
+
+impl Debug for dyn Player {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "Player{{{}}}", self.mark())
     }
 }

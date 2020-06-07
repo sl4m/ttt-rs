@@ -2,9 +2,11 @@ use crate::board::Board;
 use crate::mark::Mark;
 use crate::player::Player;
 use crate::std_io::StdIo;
+use crate::strings;
 use crate::ui::Ui;
 
-pub(crate) struct Human<T: StdIo> {
+#[derive(Debug)]
+pub struct Human<T: StdIo> {
     mark: Mark,
     ui: Ui<T>,
 }
@@ -13,8 +15,6 @@ impl<T> Human<T>
 where
     T: StdIo,
 {
-    const PROMPT_MESSAGE: &'static str = "Make your move";
-
     pub fn new(mark: Mark, ui: Ui<T>) -> Human<T> {
         Human { mark, ui }
     }
@@ -28,7 +28,7 @@ where
         loop {
             let move_str =
                 self.ui
-                    .prompt_with_text(&format!("{}, {}", Self::PROMPT_MESSAGE, self.mark));
+                    .prompt_with_text(&format!("{}, {}", strings::PROMPT_MESSAGE, self.mark));
             if let Ok(value) = move_str.parse::<usize>() {
                 break value;
             }

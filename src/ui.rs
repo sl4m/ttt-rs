@@ -1,6 +1,7 @@
 use crate::std_io::{console_io::ConsoleIo, StdIo};
 
-pub(crate) struct Ui<T: StdIo> {
+#[derive(Debug)]
+pub struct Ui<T: StdIo> {
     io: T,
 }
 
@@ -21,7 +22,7 @@ where
         self.io.println(text);
     }
 
-    fn io_mut(&mut self) -> &mut T {
+    pub fn io_mut(&mut self) -> &mut T {
         #![allow(dead_code)]
         &mut self.io
     }

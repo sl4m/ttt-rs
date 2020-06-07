@@ -3,6 +3,7 @@ use crate::board::Board;
 use crate::mark::Mark;
 use crate::player::Player;
 use crate::std_io::StdIo;
+use crate::strings;
 use crate::ui::Ui;
 
 pub(crate) struct Computer<T: Ai, U: StdIo> {
@@ -16,8 +17,6 @@ where
     T: Ai,
     U: StdIo,
 {
-    const MESSAGE: &'static str = "Computer makes a move";
-
     pub fn new(ai: T, mark: Mark, ui: Ui<U>) -> Computer<T, U> {
         Computer { ai, mark, ui }
     }
@@ -39,7 +38,7 @@ where
     U: StdIo,
 {
     fn get_move(&self, board: &Board) -> usize {
-        self.ui.print(Self::MESSAGE);
+        self.ui.print(strings::CPU_MESSAGE);
         self.ai.search(board, self.mark)
     }
 

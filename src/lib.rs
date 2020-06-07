@@ -6,17 +6,19 @@
     clippy::integer_arithmetic,
     clippy::missing_docs_in_private_items,
     clippy::missing_inline_in_public_items,
+    clippy::must_use_candidate,
     clippy::result_expect_used
 )]
 
 mod ai;
-mod board;
-mod game;
-mod mark;
-mod player;
+pub mod board;
+pub mod game;
+pub mod mark;
+pub mod player;
 mod run;
-mod std_io;
-mod ui;
+pub mod std_io;
+pub mod strings;
+pub mod ui;
 
 pub use crate::run::run;
 
