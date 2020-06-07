@@ -1,4 +1,4 @@
-name: ttt-rs tests
+name: Build
 
 on:
   push:
@@ -46,6 +46,3 @@ jobs:
 
     - name: Clippy
       run: cargo clippy
-
-    - name: Lint
-      run: cargo run lint
