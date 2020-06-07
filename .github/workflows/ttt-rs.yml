@@ -2,11 +2,13 @@ name: ttt-rs tests
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
     paths-ignore:
       - '**.md'
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
     paths-ignore:
       - '**.md'
 
@@ -18,16 +20,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
     - uses: actions/checkout@v2
+
+    - name: Install Main Toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: x86_64-unknown-linux-musl
+        profile: minimal
+        components: clippy, rustfmt
+        override: true
 
     - name: Versions
       run: |
         rustup --version
         cargo --version
         cargo clippy --version
+
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
+
+    - name: Test
       run: cargo test --verbose
+
     - name: Clippy
       run: cargo clippy
+
+    - name: Lint
+      run: cargo run lint
