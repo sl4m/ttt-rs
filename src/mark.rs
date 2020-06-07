@@ -7,8 +7,8 @@ pub(crate) enum Mark {
 }
 
 impl Mark {
-    pub fn opposite(&self) -> Self {
-        match &*self {
+    pub fn opposite(self) -> Self {
+        match self {
             Self::O => Self::X,
             Self::X => Self::O,
         }

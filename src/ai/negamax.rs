@@ -1,27 +1,32 @@
+use crate::ai::Ai;
 use crate::board::Board;
 use crate::mark::Mark;
 use core::cmp;
 use std::thread;
 
-pub(crate) struct Ai {}
+pub(crate) struct Negamax;
 
-impl Ai {
+impl Negamax {
     const MIN: i16 = i16::MIN + 1;
     const MAX: i16 = i16::MAX - 1;
-    const DEFAULT_DEPTH: i16 = 5;
+    const DEFAULT_DEPTH: u8 = 5;
 
-    pub fn search(board: Board, mark: Mark) -> usize {
+    pub fn new() -> Self {
+        Self {}
+    }
+
+    fn search(board: &Board, mark: Mark) -> usize {
         let handles = Self::concur_search(board, mark);
 
         let mut scores = handles.into_iter().fold(vec![], |mut acc, h| {
-            acc.push(h.join().unwrap());
+            acc.push(h.join().expect("thread could not be joined"));
             acc
         });
         scores.sort_by(|a, b| b.1.cmp(&a.1));
         scores[0].0
     }
 
-    fn concur_search(board: Board, mark: Mark) -> Vec<thread::JoinHandle<(usize, i16)>> {
+    fn concur_search(board: &Board, mark: Mark) -> Vec<thread::JoinHandle<(usize, i16)>> {
         board
             .empty_cell_indices()
             .into_iter()
@@ -40,21 +45,21 @@ impl Ai {
         Self::negamax(board, mark, Self::DEFAULT_DEPTH, Self::MIN, Self::MAX)
     }
 
-    fn negamax(board: &mut Board, mark: Mark, depth: i16, alpha: i16, beta: i16) -> i16 {
+    fn negamax(board: &mut Board, mark: Mark, depth: u8, alpha: i16, beta: i16) -> i16 {
         if depth == 0 || board.is_game_over() {
             Self::score(board, mark)
         } else {
-            let mut alpha = alpha;
+            let mut alpha_mut = alpha;
             for index in board.empty_cell_indices() {
                 board.set_mark(index, mark);
-                let score = -Self::negamax(board, mark.opposite(), depth - 1, -beta, -alpha);
+                let score = -Self::negamax(board, mark.opposite(), depth - 1, -beta, -alpha_mut);
                 board.reset_mark(index);
-                alpha = cmp::max(score, alpha);
-                if alpha >= beta {
+                alpha_mut = cmp::max(score, alpha_mut);
+                if alpha_mut >= beta {
                     break;
                 }
             }
-            alpha
+            alpha_mut
         }
     }
 
@@ -71,10 +76,16 @@ impl Ai {
     }
 }
 
+impl Ai for Negamax {
+    fn search(&self, board: &Board, mark: Mark) -> usize {
+        Self::search(board, mark)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::mark::Mark;
+    use crate::test_common::new_board;
 
     #[test]
     fn it_makes_immediate_win() {
@@ -83,7 +94,8 @@ mod tests {
         board.set_mark(4, Mark::X);
         board.set_mark(6, Mark::X);
         board.set_mark(7, Mark::O);
-        assert_eq!(0, Ai::search(board, Mark::O));
+        assert_eq!(0, Negamax::new().search(&board, Mark::O));
+        assert_eq!(0, Negamax::search(&board, Mark::O));
     }
 
     #[test]
@@ -92,7 +104,7 @@ mod tests {
         board.set_mark(0, Mark::X);
         board.set_mark(2, Mark::X);
         board.set_mark(4, Mark::O);
-        assert_eq!(1, Ai::search(board, Mark::O));
+        assert_eq!(1, Negamax::search(&board, Mark::O));
     }
 
     #[test]
@@ -101,7 +113,7 @@ mod tests {
         board.set_mark(0, Mark::X);
         board.set_mark(4, Mark::O);
         board.set_mark(8, Mark::X);
-        assert_eq!(1, Ai::search(board, Mark::O));
+        assert_eq!(1, Negamax::search(&board, Mark::O));
     }
 
     #[test]
@@ -110,17 +122,13 @@ mod tests {
         board.set_mark(2, Mark::O);
         board.set_mark(4, Mark::X);
         board.set_mark(6, Mark::X);
-        assert_eq!(0, Ai::search(board, Mark::O));
+        assert_eq!(0, Negamax::search(&board, Mark::O));
     }
 
     #[test]
     fn it_makes_corner_move() {
         let mut board = new_board();
         board.set_mark(0, Mark::X);
-        assert_eq!(4, Ai::search(board, Mark::O));
-    }
-
-    fn new_board() -> Board {
-        Board::new(9)
+        assert_eq!(4, Negamax::search(&board, Mark::O));
     }
 }

@@ -1,7 +1,4 @@
-pub trait StdIo {
-    fn println(&self, text: &str);
-    fn prompt(&self) -> String;
-}
+use crate::std_io::StdIo;
 
 pub(crate) struct Ui<'a, T: StdIo> {
     io: &'a T,
@@ -15,7 +12,8 @@ where
         Ui { io }
     }
 
-    pub fn prompt_for_move(&self) -> String {
+    pub fn prompt_with_text(&self, text: &str) -> String {
+        self.io.println(text);
         self.io.prompt()
     }
 
@@ -27,48 +25,22 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::cell::RefCell;
-
-    struct DoubleStdIo<'a> {
-        inputs: RefCell<Vec<&'a str>>,
-        outputs: RefCell<Vec<String>>,
-    }
-
-    impl<'a> DoubleStdIo<'a> {
-        fn new(inputs: Vec<&'a str>) -> Self {
-            Self {
-                inputs: RefCell::new(inputs),
-                outputs: RefCell::new(vec![]),
-            }
-        }
-
-        fn pop_output(&mut self) -> String {
-            self.outputs.borrow_mut().pop().unwrap()
-        }
-    }
-
-    impl StdIo for DoubleStdIo<'_> {
-        fn println(&self, text: &str) {
-            self.outputs.borrow_mut().push(text.to_owned());
-        }
-
-        fn prompt(&self) -> String {
-            self.inputs.borrow_mut().pop().unwrap().to_owned()
-        }
-    }
+    use crate::test_common::DoubleStdIo;
 
     #[test]
-    fn it_prompts_for_move() {
-        let std_io = DoubleStdIo::new(vec!["1"]);
+    fn it_prompts_with_custom_text() {
+        let mut std_io = DoubleStdIo::new(vec!["1"]);
         let ui = Ui::new(&std_io);
-        assert_eq!("1".to_owned(), ui.prompt_for_move());
+        let text = "Enter a move";
+        assert_eq!("1".to_owned(), ui.prompt_with_text(text));
+        assert_eq!(text, std_io.pop_output());
     }
 
     #[test]
     fn it_prints_custom_text() {
         let mut std_io = DoubleStdIo::new(vec![]);
         let ui = Ui::new(&std_io);
-        let text = "Hello world";
+        let text = "Computer makes a move";
         ui.print(text);
         assert_eq!(text, std_io.pop_output());
     }

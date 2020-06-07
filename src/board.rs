@@ -10,9 +10,11 @@ pub(crate) struct Board {
 }
 
 impl Board {
+    const CELL_WALL: &'static str = "---";
+
     pub fn new(size: usize) -> Self {
         let grid = vec![None; size];
-        let row_size = (size as f64).sqrt() as usize;
+        let row_size = Self::sqrt(size);
         let win_combos: Vec<Vec<usize>> = Self::gen_win_combos(size, row_size);
         Self {
             grid,
@@ -38,23 +40,16 @@ impl Board {
         self.grid
             .iter()
             .enumerate()
-            .filter(|(_, n)| match n {
-                Some(_) => false,
-                None => true,
-            })
-            .map(|(i, _)| i)
+            .filter_map(|(i, n)| if n.is_none() { Some(i) } else { None })
             .collect()
     }
 
     pub fn is_occupied(&self, index: usize) -> bool {
-        match self._mark(index) {
-            Some(_) => true,
-            None => false,
-        }
+        self._mark(index).is_some()
     }
 
     pub fn is_all_occupied(&self) -> bool {
-        self.grid.iter().all(|cell| cell.is_some())
+        self.grid.iter().all(Option::is_some)
     }
 
     pub fn mark(&self, index: usize) -> Option<&Mark> {
@@ -122,7 +117,7 @@ impl Board {
     }
 
     fn _mark(&self, index: usize) -> Option<&Mark> {
-        self.grid.get(index).unwrap().as_ref()
+        self.grid[index].as_ref()
     }
 
     fn _set_mark(&mut self, index: usize, mark: Option<Mark>) -> Option<Mark> {
@@ -130,13 +125,31 @@ impl Board {
         self.grid[index] = mark;
         old_mark
     }
+
+    #[allow(
+        clippy::as_conversions,
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        clippy::cast_sign_loss
+    )]
+    fn sqrt(size: usize) -> usize {
+        (size as f64).sqrt() as usize
+    }
+
+    fn grid_line(&self) -> String {
+        let mut line_pieces: Vec<&str> = vec![];
+        for _ in 0..self.row_size {
+            line_pieces.push(Self::CELL_WALL);
+        }
+        format!("{}\n", line_pieces.join("+"))
+    }
 }
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut rows: Vec<String> = vec![];
-        let mut row_iter = self.grid.chunks(self.row_size);
-        while let Some(row) = row_iter.next() {
+        let row_iter = self.grid.chunks(self.row_size);
+        for row in row_iter {
             let row = row
                 .iter()
                 .map(|cell| match cell {
@@ -151,21 +164,10 @@ impl fmt::Display for Board {
     }
 }
 
-impl Board {
-    const CELL_WALL: &'static str = "---";
-
-    fn grid_line(&self) -> String {
-        let mut line_pieces: Vec<&str> = vec![];
-        for _ in 0..self.row_size {
-            line_pieces.push(Self::CELL_WALL);
-        }
-        format!("{}\n", line_pieces.join("+"))
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_common::new_board;
 
     #[test]
     fn it_gets_size() {
@@ -324,9 +326,5 @@ mod tests {
             board.set_mark(n, Mark::O);
         }
         assert_eq!(true, board.is_game_over());
-    }
-
-    fn new_board() -> Board {
-        Board::new(9)
     }
 }
