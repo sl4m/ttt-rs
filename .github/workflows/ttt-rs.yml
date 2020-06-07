@@ -17,8 +17,25 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  all:
+    name: All
+
+    strategy:
+      matrix:
+        os:
+        - macos-latest
+        - ubuntu-latest
+        - windows-latest
+        include:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-musl
+        - os: macos-latest
+          target: x86_64-apple-darwin
+        - os: windows-latest
+          target: x86_64-pc-windows-msvc
+
+    runs-on: ${{matrix.os}}
+
     steps:
 
     - uses: actions/checkout@v2
@@ -27,9 +44,9 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
-        target: x86_64-unknown-linux-musl
+        target: ${{ matrix.target }}
         profile: minimal
-        components: clippy, rustfmt
+        components: clippy
         override: true
 
     - name: Versions
