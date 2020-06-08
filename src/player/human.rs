@@ -1,8 +1,8 @@
 use crate::board::Board;
 use crate::mark::Mark;
+use crate::messages;
 use crate::player::Player;
 use crate::std_io::StdIo;
-use crate::strings;
 use crate::ui::Ui;
 
 #[derive(Debug)]
@@ -28,7 +28,7 @@ where
         loop {
             let move_str =
                 self.ui
-                    .prompt_with_text(&format!("{}, {}", strings::PROMPT_MESSAGE, self.mark));
+                    .prompt_with_text(&format!("{}, {}", messages::PROMPT_MESSAGE, self.mark));
             if let Ok(value) = move_str.parse::<usize>() {
                 break value;
             }

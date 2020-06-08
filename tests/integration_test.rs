@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use ttt_rs::strings;
+use ttt_rs::messages;
 use ttt_rs::{
     board::Board, game::Game, mark::Mark, player::human::Human, player::Player, std_io::StdIo,
     ui::Ui,
@@ -50,7 +50,7 @@ fn it_runs_through_the_draw_game() {
     let mut game = Game::new(board, players, Ui::new(DoubleStdIo::new(vec![])));
     game.run();
 
-    assert!(game.ui_mut().io_mut().does_contain(strings::DRAW_MESSAGE));
+    assert!(game.ui_mut().io_mut().does_contain(messages::DRAW_MESSAGE));
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn it_runs_through_the_win_game() {
     assert!(game
         .ui_mut()
         .io_mut()
-        .does_contain(&format!("{} {}", strings::WIN_MESSAGE, Mark::X)));
+        .does_contain(&format!("{} {}", messages::WIN_MESSAGE, Mark::X)));
 }
 
 fn player_x_tie() -> Vec<&'static str> {

@@ -14,10 +14,10 @@ mod ai;
 pub mod board;
 pub mod game;
 pub mod mark;
+pub mod messages;
 pub mod player;
 mod run;
 pub mod std_io;
-pub mod strings;
 pub mod ui;
 
 pub use crate::run::run;

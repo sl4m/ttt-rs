@@ -66,6 +66,10 @@ impl Board {
         self._set_mark(index, Some(mark))
     }
 
+    pub fn is_available_cell(&self, index: usize) -> bool {
+        index < self.size && !self.is_occupied(index)
+    }
+
     pub fn is_game_over(&self) -> bool {
         self.is_all_occupied() || self.winner().is_some()
     }
@@ -329,5 +333,14 @@ mod tests {
             board.set_mark(n, Mark::O);
         }
         assert_eq!(true, board.is_game_over());
+    }
+
+    #[test]
+    fn it_checks_valid_mark_placement() {
+        let mut board = new_board();
+        assert_eq!(true, board.is_available_cell(0));
+        board.set_mark(0, Mark::X);
+        assert_eq!(false, board.is_available_cell(0));
+        assert_eq!(false, board.is_available_cell(10));
     }
 }

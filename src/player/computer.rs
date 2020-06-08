@@ -1,9 +1,9 @@
 use crate::ai::{negamax::Negamax, Ai};
 use crate::board::Board;
 use crate::mark::Mark;
+use crate::messages;
 use crate::player::Player;
 use crate::std_io::StdIo;
-use crate::strings;
 use crate::ui::Ui;
 
 pub(crate) struct Computer<T: Ai, U: StdIo> {
@@ -38,7 +38,7 @@ where
     U: StdIo,
 {
     fn get_move(&self, board: &Board) -> usize {
-        self.ui.print(strings::CPU_MESSAGE);
+        self.ui.print(messages::CPU_MESSAGE);
         self.ai.search(board, self.mark)
     }
 
