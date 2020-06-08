@@ -1,6 +1,5 @@
 use crate::board::Board;
 use crate::mark::Mark;
-use crate::messages;
 use crate::player::Player;
 use crate::std_io::StdIo;
 use crate::ui::Ui;
@@ -26,9 +25,7 @@ where
 {
     fn get_move(&self, _board: &Board) -> usize {
         loop {
-            let move_str =
-                self.ui
-                    .prompt_with_text(&format!("{}, {}", messages::PROMPT_MESSAGE, self.mark));
+            let move_str = self.ui.prompt_for_move(&self.mark.to_string());
             if let Ok(value) = move_str.parse::<usize>() {
                 break value;
             }

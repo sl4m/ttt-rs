@@ -1,6 +1,5 @@
 use crate::board::Board;
 use crate::mark::Mark;
-use crate::messages;
 use crate::player::{computer::Computer, human::Human, Player};
 use crate::std_io::{console_io::ConsoleIo, StdIo};
 use crate::ui::Ui;
@@ -38,11 +37,14 @@ where
 
         self.ui.print(&self.board.to_string());
         if let Some(winner) = self.board.winner() {
-            self.ui
-                .print(&format!("{} {}", messages::WIN_MESSAGE, winner));
+            self.ui.print_winner(&winner.to_string());
         } else {
-            self.ui.print(messages::DRAW_MESSAGE);
+            self.ui.print_draw();
         }
+    }
+
+    pub fn board(&self) -> &Board {
+        &self.board
     }
 
     pub fn ui_mut(&mut self) -> &mut Ui<U> {

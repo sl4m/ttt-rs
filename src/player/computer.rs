@@ -1,7 +1,6 @@
 use crate::ai::{negamax::Negamax, Ai};
 use crate::board::Board;
 use crate::mark::Mark;
-use crate::messages;
 use crate::player::Player;
 use crate::std_io::StdIo;
 use crate::ui::Ui;
@@ -38,7 +37,7 @@ where
     U: StdIo,
 {
     fn get_move(&self, board: &Board) -> usize {
-        self.ui.print(messages::CPU_MESSAGE);
+        self.ui.print_for_computer_move();
         self.ai.search(board, self.mark)
     }
 
