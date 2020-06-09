@@ -1,4 +1,5 @@
 use crate::mark::Mark;
+use crate::utils::sqrt::Sqrt;
 use std::fmt;
 
 #[derive(Clone, Debug)]
@@ -14,7 +15,7 @@ impl Board {
 
     pub fn new(size: usize) -> Self {
         let grid = vec![None; size];
-        let row_size = Self::sqrt(size);
+        let row_size = size.sqrt();
         let win_combos: Vec<Vec<usize>> = Self::gen_win_combos(size, row_size);
         Self {
             grid,
@@ -133,16 +134,6 @@ impl Board {
         old_mark
     }
 
-    #[allow(
-        clippy::as_conversions,
-        clippy::cast_possible_truncation,
-        clippy::cast_precision_loss,
-        clippy::cast_sign_loss
-    )]
-    fn sqrt(size: usize) -> usize {
-        (size as f64).sqrt() as usize
-    }
-
     fn grid_line(&self) -> String {
         let mut line_pieces: Vec<&str> = vec![];
         for _ in 0..self.row_size {
@@ -169,6 +160,28 @@ impl fmt::Display for Board {
 
         write!(f, "{}", rows.join(&self.grid_line()))
     }
+}
+
+#[macro_export]
+macro_rules! board {
+    ($x:expr) => {{
+        let board_size = $x.len();
+        if !board_size.is_perfect_sq() {
+            panic!("board str provided is not a perfect square");
+        }
+        let mut board = Board::new(board_size);
+        for (index, ch) in (&$x.to_uppercase()).chars().enumerate() {
+            let opt_mark: Option<Mark> = match ch {
+                'O' => Some(Mark::O),
+                'X' => Some(Mark::X),
+                _ => None,
+            };
+            if let Some(mark) = opt_mark {
+                board.set_mark(index, mark);
+            }
+        }
+        board
+    }};
 }
 
 #[cfg(test)]
@@ -245,11 +258,7 @@ mod tests {
 
     #[test]
     fn it_displays_the_board_as_string() {
-        let mut board = new_board();
-        for n in 0..9 {
-            board.set_mark(n, Mark::O);
-        }
-
+        let board = board!["OOOOOOOOO"];
         let board_string = r#" O | O | O
 ---+---+---
  O | O | O
@@ -296,42 +305,33 @@ mod tests {
 
     #[test]
     fn it_checks_for_winner_3x3() {
-        let mut board = new_board();
+        let board = new_board();
         assert_eq!(None, board.winner());
-        board.set_mark(0, Mark::O);
-        board.set_mark(1, Mark::O);
-        board.set_mark(2, Mark::O);
+        let board = board!["OOO      "];
         assert_eq!(Some(&Mark::O), board.winner());
     }
 
     #[test]
     fn it_checks_for_winner_4x4() {
-        let mut board = Board::new(16);
+        let board = Board::new(16);
         assert_eq!(None, board.winner());
-        board.set_mark(0, Mark::X);
-        board.set_mark(5, Mark::X);
-        board.set_mark(10, Mark::X);
-        board.set_mark(15, Mark::X);
+        let board = board!["X    X    X    X"];
         assert_eq!(Some(&Mark::X), board.winner());
     }
 
     #[test]
     fn it_is_game_is_over_if_all_cells_occupied() {
-        let mut board = new_board();
+        let board = new_board();
         assert_eq!(false, board.is_game_over());
-        for n in 0..9 {
-            board.set_mark(n, Mark::O);
-        }
+        let board = board!["OOOOOOOOO"];
         assert_eq!(true, board.is_game_over());
     }
 
     #[test]
     fn it_is_game_is_over_if_there_is_a_winner() {
-        let mut board = new_board();
+        let board = new_board();
         assert_eq!(false, board.is_game_over());
-        for n in 0..3 {
-            board.set_mark(n, Mark::O);
-        }
+        let board = board!["OOO      "];
         assert_eq!(true, board.is_game_over());
     }
 
@@ -342,5 +342,32 @@ mod tests {
         board.set_mark(0, Mark::X);
         assert_eq!(false, board.is_available_cell(0));
         assert_eq!(false, board.is_available_cell(10));
+    }
+
+    #[test]
+    fn it_creates_a_new_board_from_a_str() {
+        let board_str = "XOXOXOOX ";
+        let board = board![board_str];
+        let expectations: [Option<&Mark>; 9] = [
+            Some(&Mark::X),
+            Some(&Mark::O),
+            Some(&Mark::X),
+            Some(&Mark::O),
+            Some(&Mark::X),
+            Some(&Mark::O),
+            Some(&Mark::O),
+            Some(&Mark::X),
+            None,
+        ];
+        for (index, expected) in expectations.iter().enumerate() {
+            assert_eq!(*expected, board.mark(index));
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "board str provided is not a perfect square")]
+    fn it_panics_if_board_str_is_not_a_perfect_square() {
+        let board_str = "XOXOX";
+        board![board_str];
     }
 }

@@ -18,6 +18,7 @@ pub mod player;
 mod run;
 pub mod std_io;
 pub mod ui;
+mod utils;
 
 pub use crate::run::run;
 
