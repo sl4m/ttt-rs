@@ -1,9 +1,10 @@
 use std::fmt;
 
+#[repr(u8)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Mark {
-    O,
-    X,
+    O = 0,
+    X = 1,
 }
 
 impl Mark {
@@ -24,6 +25,16 @@ impl fmt::Display for Mark {
     }
 }
 
+impl From<&str> for Mark {
+    fn from(mark: &str) -> Self {
+        match mark {
+            "X" | "x" => Self::X,
+            "O" | "o" => Self::O,
+            _ => panic!("Could not convert {} to a Mark", mark),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -38,5 +49,13 @@ mod tests {
     fn it_gets_opposite_mark() {
         assert_eq!(Mark::X, Mark::O.opposite());
         assert_eq!(Mark::O, Mark::X.opposite());
+    }
+
+    #[test]
+    fn it_converts_from_str() {
+        assert_eq!(Mark::X, Mark::from("X"));
+        assert_eq!(Mark::O, Mark::from("O"));
+        assert_eq!(Mark::X, Mark::from("x"));
+        assert_eq!(Mark::O, Mark::from("o"));
     }
 }
