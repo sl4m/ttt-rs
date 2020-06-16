@@ -1,5 +1,5 @@
 pub(crate) mod computer;
-pub mod human;
+pub mod console;
 
 use crate::board::Board;
 use crate::mark::Mark;

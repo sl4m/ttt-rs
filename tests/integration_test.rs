@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use ttt_rs::{
-    board::Board, game::Game, mark::Mark, player::human::Human, player::Player, std_io::StdIo,
-    ui::Ui,
+    board::Board, game::Game, mark::Mark, player::console::human::Human, player::Player,
+    std_io::StdIo, ui::Ui,
 };
 
 struct DoubleStdIo<'a> {

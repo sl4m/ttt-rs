@@ -1,6 +1,6 @@
 use crate::board::Board;
 use crate::mark::Mark;
-use crate::player::{computer::Computer, human::Human, Player};
+use crate::player::{computer::Computer, console::human::Human, Player};
 use crate::std_io::{console_io::ConsoleIo, StdIo};
 use crate::ui::Ui;
 use core::fmt::Debug;
@@ -62,7 +62,7 @@ impl Game<ConsoleIo> {
         let board = Board::new(9);
         let ui = Ui::with_defaults();
         let players: Vec<Box<dyn Player>> = vec![
-            Box::new(Human::new(Mark::X, Ui::with_defaults())),
+            Box::new(Human::with_defaults(Mark::X)),
             Box::new(Computer::with_defaults(Mark::O)),
         ];
         let mut game = Self::new(board, players, ui);

@@ -1,7 +1,7 @@
 use crate::board::Board;
 use crate::mark::Mark;
 use crate::player::Player;
-use crate::std_io::StdIo;
+use crate::std_io::{console_io::ConsoleIo, StdIo};
 use crate::ui::Ui;
 
 #[derive(Debug)]
@@ -16,6 +16,15 @@ where
 {
     pub fn new(mark: Mark, ui: Ui<T>) -> Human<T> {
         Human { mark, ui }
+    }
+}
+
+impl Human<ConsoleIo> {
+    pub fn with_defaults(mark: Mark) -> Human<ConsoleIo> {
+        Human {
+            mark,
+            ui: Ui::with_defaults(),
+        }
     }
 }
 
