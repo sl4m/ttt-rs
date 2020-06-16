@@ -7,9 +7,9 @@ use std::thread;
 pub(crate) struct Negamax;
 
 impl Negamax {
-    const MIN: i16 = i16::MIN + 1;
-    const MAX: i16 = i16::MAX - 1;
-    const DEFAULT_DEPTH: u8 = 5;
+    const MIN: i16 = -999;
+    const MAX: i16 = 999;
+    const DEFAULT_DEPTH: i16 = 5;
 
     pub fn new() -> Self {
         Self {}
@@ -45,7 +45,7 @@ impl Negamax {
         Self::negamax(board, mark, Self::DEFAULT_DEPTH, Self::MIN, Self::MAX)
     }
 
-    fn negamax(board: &mut Board, mark: Mark, depth: u8, alpha: i16, beta: i16) -> i16 {
+    fn negamax(board: &mut Board, mark: Mark, depth: i16, alpha: i16, beta: i16) -> i16 {
         if depth == 0 || board.is_game_over() {
             Self::score(board, mark)
         } else {
@@ -54,7 +54,7 @@ impl Negamax {
                 board.set_mark(index, mark);
                 let score = -Self::negamax(board, mark.opposite(), depth - 1, -beta, -alpha_mut);
                 board.reset_mark(index);
-                alpha_mut = cmp::max(score, alpha_mut);
+                alpha_mut = cmp::max(score + depth, alpha_mut);
                 if alpha_mut >= beta {
                     break;
                 }
@@ -99,6 +99,18 @@ mod tests {
     }
 
     #[test]
+    fn it_makes_immediate_win_alternate() {
+        let mut board = new_board();
+        board.set_mark(0, Mark::X);
+        board.set_mark(1, Mark::O);
+        board.set_mark(2, Mark::X);
+        board.set_mark(4, Mark::O);
+        board.set_mark(8, Mark::X);
+        assert_eq!(7, Negamax::new().search(&board, Mark::O));
+        assert_eq!(7, Negamax::search(&board, Mark::O));
+    }
+
+    #[test]
     fn it_blocks_immediate_win() {
         let mut board = new_board();
         board.set_mark(0, Mark::X);
@@ -113,7 +125,7 @@ mod tests {
         board.set_mark(0, Mark::X);
         board.set_mark(4, Mark::O);
         board.set_mark(8, Mark::X);
-        assert_eq!(1, Negamax::search(&board, Mark::O));
+        assert_eq!(3, Negamax::search(&board, Mark::O));
     }
 
     #[test]

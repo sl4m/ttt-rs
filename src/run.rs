@@ -1,6 +1,5 @@
 use crate::game::Game;
 
 pub fn run() {
-    let mut game = Game::with_defaults();
-    game.run();
+    Game::run_with_defaults();
 }

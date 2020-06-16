@@ -11,9 +11,11 @@ pub struct Board {
 }
 
 impl Board {
-    const CELL_WALL: &'static str = "---";
-
+    #[allow(clippy::panic)]
     pub fn new(size: usize) -> Self {
+        if !size.is_perfect_sq() {
+            panic!("board size is not a perfect square");
+        }
         let grid = vec![None; size];
         let row_size = size.sqrt();
         let win_combos: Vec<Vec<usize>> = Self::gen_win_combos(size, row_size);
@@ -134,6 +136,8 @@ impl Board {
         old_mark
     }
 
+    const CELL_WALL: &'static str = "---";
+
     fn grid_line(&self) -> String {
         let mut line_pieces: Vec<&str> = vec![];
         for _ in 0..self.row_size {
@@ -145,20 +149,36 @@ impl Board {
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut rows: Vec<String> = vec![];
-        let row_iter = self.grid.chunks(self.row_size);
-        for row in row_iter {
-            let row = row
+        if f.alternate() {
+            let rows = self.grid.chunks(self.row_size).enumerate().fold(
+                vec![],
+                |mut acc, (row_index, row)| {
+                    let row = row
+                        .iter()
+                        .enumerate()
+                        .map(|(index, cell)| match cell {
+                            Some(cell) => cell.to_string(),
+                            None => (self.row_size * row_index + index).to_string(),
+                        })
+                        .collect::<Vec<String>>();
+                    acc.push(format!(" {}\n", row.join(" | ")));
+                    acc
+                },
+            );
+
+            write!(f, "{}", rows.join(&self.grid_line()))
+        } else {
+            let board_str: String = self
+                .grid
                 .iter()
                 .map(|cell| match cell {
                     Some(cell) => cell.to_string(),
                     None => " ".to_string(),
                 })
-                .collect::<Vec<String>>();
-            rows.push(format!(" {}\n", row.join(" | ")));
+                .collect::<Vec<String>>()
+                .join("");
+            write!(f, "{}", board_str)
         }
-
-        write!(f, "{}", rows.join(&self.grid_line()))
     }
 }
 
@@ -166,9 +186,6 @@ impl fmt::Display for Board {
 macro_rules! board {
     ($x:expr) => {{
         let board_size = $x.len();
-        if !board_size.is_perfect_sq() {
-            panic!("board str provided is not a perfect square");
-        }
         let mut board = Board::new(board_size);
         for (index, ch) in (&$x.to_uppercase()).chars().enumerate() {
             let opt_mark: Option<Mark> = match ch {
@@ -258,15 +275,22 @@ mod tests {
 
     #[test]
     fn it_displays_the_board_as_string() {
-        let board = board!["OOOOOOOOO"];
-        let board_string = r#" O | O | O
+        let board_str = "OOOOOOOOO";
+        let board = board![board_str];
+        assert_eq!(board_str, format!("{}", board));
+    }
+
+    #[test]
+    fn it_pretty_prints_the_board() {
+        let board = board![" OOO OOO "];
+        let board_string = r#" 0 | O | O
 ---+---+---
- O | O | O
+ O | 4 | O
 ---+---+---
- O | O | O
+ O | O | 8
 "#;
 
-        assert_eq!(board_string, format!("{}", board));
+        assert_eq!(board_string, format!("{:#}", board));
     }
 
     #[test]
@@ -365,9 +389,15 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "board str provided is not a perfect square")]
+    #[should_panic(expected = "board size is not a perfect square")]
     fn it_panics_if_board_str_is_not_a_perfect_square() {
         let board_str = "XOXOX";
         board![board_str];
+    }
+
+    #[test]
+    #[should_panic(expected = "board size is not a perfect square")]
+    fn it_panics_if_board_size_is_not_a_perfect_square() {
+        Board::new(10);
     }
 }

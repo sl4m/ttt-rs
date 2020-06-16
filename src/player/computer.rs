@@ -2,42 +2,33 @@ use crate::ai::{negamax::Negamax, Ai};
 use crate::board::Board;
 use crate::mark::Mark;
 use crate::player::Player;
-use crate::std_io::StdIo;
-use crate::ui::Ui;
 
-pub(crate) struct Computer<T: Ai, U: StdIo> {
+pub(crate) struct Computer<T: Ai> {
     ai: T,
     mark: Mark,
-    ui: Ui<U>,
 }
 
-impl<T, U> Computer<T, U>
+impl<T> Computer<T>
 where
     T: Ai,
-    U: StdIo,
 {
-    pub fn new(ai: T, mark: Mark, ui: Ui<U>) -> Computer<T, U> {
-        Computer { ai, mark, ui }
+    pub fn new(ai: T, mark: Mark) -> Computer<T> {
+        Computer { ai, mark }
     }
 }
 
-impl<U> Computer<Negamax, U>
-where
-    U: StdIo,
-{
-    pub fn with_defaults(mark: Mark, ui: Ui<U>) -> Computer<Negamax, U> {
+impl Computer<Negamax> {
+    pub fn with_defaults(mark: Mark) -> Computer<Negamax> {
         let ai = Negamax::new();
-        Self::new(ai, mark, ui)
+        Self::new(ai, mark)
     }
 }
 
-impl<T, U> Player for Computer<T, U>
+impl<T> Player for Computer<T>
 where
     T: Ai,
-    U: StdIo,
 {
     fn get_move(&self, board: &Board) -> usize {
-        self.ui.print_for_computer_move();
         self.ai.search(board, self.mark)
     }
 
@@ -49,7 +40,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_common::{new_board, DoubleStdIo};
+    use crate::test_common::new_board;
     use std::cell::RefCell;
 
     struct DoubleAi {
@@ -72,25 +63,18 @@ mod tests {
 
     #[test]
     fn it_returns_the_mark() {
-        let std_io = DoubleStdIo::new(vec![]);
-        let ui = Ui::new(std_io);
-        assert_eq!(Mark::X, new_computer(vec![], ui).mark());
+        assert_eq!(Mark::X, new_computer(vec![]).mark());
     }
 
     #[test]
     fn it_returns_a_valid_move() {
-        let std_io = DoubleStdIo::new(vec![]);
-        let ui = Ui::new(std_io);
-        let computer = new_computer(vec![1, 8], ui);
+        let computer = new_computer(vec![1, 8]);
         assert_eq!(8, computer.get_move(&new_board()));
         assert_eq!(1, computer.get_move(&new_board()));
     }
 
-    fn new_computer(
-        moves: Vec<usize>,
-        ui: Ui<DoubleStdIo<'_>>,
-    ) -> Computer<DoubleAi, DoubleStdIo<'_>> {
+    fn new_computer(moves: Vec<usize>) -> Computer<DoubleAi> {
         let ai = DoubleAi::new(moves);
-        Computer::new(ai, Mark::X, ui)
+        Computer::new(ai, Mark::X)
     }
 }

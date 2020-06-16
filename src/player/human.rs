@@ -25,7 +25,7 @@ where
 {
     fn get_move(&self, _board: &Board) -> usize {
         loop {
-            let move_str = self.ui.prompt_for_move(&self.mark.to_string());
+            let move_str = self.ui.prompt();
             if let Ok(value) = move_str.parse::<usize>() {
                 break value;
             }

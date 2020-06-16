@@ -25,8 +25,9 @@ where
             if self.board.is_game_over() {
                 break;
             }
-            self.ui.print(&self.board.to_string());
+            self.print_board();
             let player_move = loop {
+                self.ui.print_turn_message(&player.mark().to_string());
                 let position = player.get_move(&self.board);
                 if self.board.is_available_cell(position) {
                     break position;
@@ -35,7 +36,7 @@ where
             self.board.set_mark(player_move, player.mark());
         }
 
-        self.ui.print(&self.board.to_string());
+        self.print_board();
         if let Some(winner) = self.board.winner() {
             self.ui.print_winner(&winner.to_string());
         } else {
@@ -50,17 +51,22 @@ where
     pub fn ui_mut(&mut self) -> &mut Ui<U> {
         &mut self.ui
     }
+
+    fn print_board(&self) {
+        self.ui.print(&format!("\n{:#}", &self.board));
+    }
 }
 
 impl Game<ConsoleIo> {
-    pub fn with_defaults() -> Self {
+    pub fn run_with_defaults() {
         let board = Board::new(9);
         let ui = Ui::with_defaults();
         let players: Vec<Box<dyn Player>> = vec![
             Box::new(Human::new(Mark::X, Ui::with_defaults())),
-            Box::new(Computer::with_defaults(Mark::O, Ui::with_defaults())),
+            Box::new(Computer::with_defaults(Mark::O)),
         ];
-        Self::new(board, players, ui)
+        let mut game = Self::new(board, players, ui);
+        game.run();
     }
 }
 
