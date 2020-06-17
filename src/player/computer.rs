@@ -3,7 +3,8 @@ use crate::board::Board;
 use crate::mark::Mark;
 use crate::player::Player;
 
-pub(crate) struct Computer<T: Ai> {
+#[derive(Debug)]
+pub struct Computer<T: Ai> {
     ai: T,
     mark: Mark,
 }
@@ -19,7 +20,7 @@ where
 
 impl Computer<Negamax> {
     pub fn with_defaults(mark: Mark) -> Computer<Negamax> {
-        let ai = Negamax::new();
+        let ai = Negamax::default();
         Self::new(ai, mark)
     }
 }

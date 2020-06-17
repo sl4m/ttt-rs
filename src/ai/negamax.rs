@@ -4,17 +4,15 @@ use crate::mark::Mark;
 use core::cmp;
 use std::thread;
 
-pub(crate) struct Negamax;
+#[derive(Debug, Default)]
+pub struct Negamax;
 
 impl Negamax {
     const MIN: i16 = -999;
     const MAX: i16 = 999;
     const DEFAULT_DEPTH: i16 = 5;
 
-    pub fn new() -> Self {
-        Self {}
-    }
-
+    #[cfg(not(target_arch = "wasm32"))]
     fn search(board: &Board, mark: Mark) -> usize {
         let handles = Self::concur_search(board, mark);
 
@@ -22,6 +20,13 @@ impl Negamax {
             acc.push(h.join().expect("thread could not be joined"));
             acc
         });
+        scores.sort_by(|a, b| b.1.cmp(&a.1));
+        scores[0].0
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    fn search(board: &Board, mark: Mark) -> usize {
+        let mut scores = Self::seq_search(board, mark);
         scores.sort_by(|a, b| b.1.cmp(&a.1));
         scores[0].0
     }
@@ -37,6 +42,20 @@ impl Negamax {
                     let score = -Self::negamax_init(&mut new_board, mark.opposite());
                     (index, score)
                 }));
+                acc
+            })
+    }
+
+    #[allow(dead_code)]
+    fn seq_search(board: &Board, mark: Mark) -> Vec<(usize, i16)> {
+        board
+            .empty_cell_indices()
+            .into_iter()
+            .fold(vec![], |mut acc, index| {
+                let mut new_board = board.clone();
+                new_board.set_mark(index, mark);
+                let score = -Self::negamax_init(&mut new_board, mark.opposite());
+                acc.push((index, score));
                 acc
             })
     }
@@ -94,8 +113,9 @@ mod tests {
         board.set_mark(4, Mark::X);
         board.set_mark(6, Mark::X);
         board.set_mark(7, Mark::O);
-        assert_eq!(0, Negamax::new().search(&board, Mark::O));
+        assert_eq!(0, Negamax::default().search(&board, Mark::O));
         assert_eq!(0, Negamax::search(&board, Mark::O));
+        assert_eq!(0, seq_search(&board, Mark::O));
     }
 
     #[test]
@@ -106,8 +126,9 @@ mod tests {
         board.set_mark(2, Mark::X);
         board.set_mark(4, Mark::O);
         board.set_mark(8, Mark::X);
-        assert_eq!(7, Negamax::new().search(&board, Mark::O));
+        assert_eq!(7, Negamax::default().search(&board, Mark::O));
         assert_eq!(7, Negamax::search(&board, Mark::O));
+        assert_eq!(7, seq_search(&board, Mark::O));
     }
 
     #[test]
@@ -117,6 +138,7 @@ mod tests {
         board.set_mark(2, Mark::X);
         board.set_mark(4, Mark::O);
         assert_eq!(1, Negamax::search(&board, Mark::O));
+        assert_eq!(1, seq_search(&board, Mark::O));
     }
 
     #[test]
@@ -126,6 +148,7 @@ mod tests {
         board.set_mark(4, Mark::O);
         board.set_mark(8, Mark::X);
         assert_eq!(3, Negamax::search(&board, Mark::O));
+        assert_eq!(3, seq_search(&board, Mark::O));
     }
 
     #[test]
@@ -135,6 +158,7 @@ mod tests {
         board.set_mark(4, Mark::X);
         board.set_mark(6, Mark::X);
         assert_eq!(0, Negamax::search(&board, Mark::O));
+        assert_eq!(0, seq_search(&board, Mark::O));
     }
 
     #[test]
@@ -142,5 +166,12 @@ mod tests {
         let mut board = new_board();
         board.set_mark(0, Mark::X);
         assert_eq!(4, Negamax::search(&board, Mark::O));
+        assert_eq!(4, seq_search(&board, Mark::O));
+    }
+
+    fn seq_search(board: &Board, mark: Mark) -> usize {
+        let mut scores = Negamax::seq_search(board, mark);
+        scores.sort_by(|a, b| b.1.cmp(&a.1));
+        scores[0].0
     }
 }

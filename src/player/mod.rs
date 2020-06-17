@@ -1,4 +1,4 @@
-pub(crate) mod computer;
+pub mod computer;
 pub mod console;
 
 use crate::board::Board;

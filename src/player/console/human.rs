@@ -21,10 +21,7 @@ where
 
 impl Human<ConsoleIo> {
     pub fn with_defaults(mark: Mark) -> Human<ConsoleIo> {
-        Human {
-            mark,
-            ui: Ui::with_defaults(),
-        }
+        Self::new(mark, Ui::with_defaults())
     }
 }
 

@@ -36,7 +36,7 @@ impl StdIo for DoubleStdIo<'_> {
 }
 
 #[test]
-fn it_runs_through_the_draw_game() {
+fn it_runs_through_a_draw_game() {
     let board = Board::new(9);
     let x_std_io = DoubleStdIo::new(player_x_tie());
     let x_ui = Ui::new(x_std_io);
@@ -54,7 +54,7 @@ fn it_runs_through_the_draw_game() {
 }
 
 #[test]
-fn it_runs_through_the_win_game() {
+fn it_runs_through_a_win_game() {
     let board = Board::new(9);
     let x_std_io = DoubleStdIo::new(player_x_win());
     let x_ui = Ui::new(x_std_io);
