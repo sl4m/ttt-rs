@@ -16,19 +16,17 @@ impl Negamax {
     fn search(board: &Board, mark: Mark) -> usize {
         let handles = Self::concur_search(board, mark);
 
-        let mut scores = handles.into_iter().fold(vec![], |mut acc, h| {
+        let scores = handles.into_iter().fold(vec![], |mut acc, h| {
             acc.push(h.join().expect("thread could not be joined"));
             acc
         });
-        scores.sort_by(|a, b| b.1.cmp(&a.1));
-        scores[0].0
+        Self::best_score(scores)
     }
 
     #[cfg(target_arch = "wasm32")]
     fn search(board: &Board, mark: Mark) -> usize {
-        let mut scores = Self::seq_search(board, mark);
-        scores.sort_by(|a, b| b.1.cmp(&a.1));
-        scores[0].0
+        let scores = Self::seq_search(board, mark);
+        Self::best_score(scores)
     }
 
     fn concur_search(board: &Board, mark: Mark) -> Vec<thread::JoinHandle<(usize, i16)>> {
@@ -92,6 +90,11 @@ impl Negamax {
         } else {
             0
         }
+    }
+
+    fn best_score(mut scores: Vec<(usize, i16)>) -> usize {
+        scores.sort_by(|a, b| b.1.cmp(&a.1));
+        scores[0].0
     }
 }
 
