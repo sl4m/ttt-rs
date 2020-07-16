@@ -1,5 +1,4 @@
-use crate::mark::Mark;
-use crate::utils::sqrt::Sqrt;
+use crate::{Mark, UsizeExt};
 use std::fmt;
 
 #[derive(Clone, Debug)]

@@ -1,7 +1,4 @@
-use crate::ai::{negamax::Negamax, Ai};
-use crate::board::Board;
-use crate::mark::Mark;
-use crate::player::Player;
+use crate::{Ai, Board, Mark, Negamax, Player};
 
 #[derive(Debug)]
 pub struct Computer<T: Ai> {

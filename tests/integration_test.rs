@@ -1,8 +1,5 @@
 use std::cell::RefCell;
-use ttt_rs::{
-    board::Board, game::Game, mark::Mark, player::console::human::Human, player::Player,
-    std_io::StdIo, ui::Ui,
-};
+use ttt_rs::{Board, Game, Human, Mark, Player, StdIo, Ui};
 
 struct DoubleStdIo<'a> {
     inputs: RefCell<Vec<&'a str>>,

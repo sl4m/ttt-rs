@@ -1,9 +1,9 @@
-pub(crate) trait Sqrt {
+pub(crate) trait UsizeExt {
     fn sqrt(&self) -> usize;
     fn is_perfect_sq(&self) -> bool;
 }
 
-impl Sqrt for usize {
+impl UsizeExt for usize {
     #[allow(
         clippy::as_conversions,
         clippy::cast_possible_truncation,

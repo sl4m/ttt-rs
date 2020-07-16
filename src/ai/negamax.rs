@@ -1,6 +1,4 @@
-use crate::ai::Ai;
-use crate::board::Board;
-use crate::mark::Mark;
+use crate::{Ai, Board, Mark};
 use core::cmp;
 use std::thread;
 

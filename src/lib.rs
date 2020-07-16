@@ -11,16 +11,25 @@
 )]
 
 mod ai;
-pub mod board;
-pub mod game;
-pub mod mark;
-pub mod player;
+mod board;
+mod ext;
+mod game;
+mod mark;
+mod player;
 mod run;
-pub mod std_io;
-pub mod ui;
-mod utils;
+mod std_io;
+mod ui;
 
-pub use crate::run::run;
+use ai::{Ai, Negamax};
+pub use board::Board;
+use ext::UsizeExt;
+pub use game::Game;
+pub use mark::Mark;
+pub use player::{Computer, Human, Player};
+pub use run::run;
+pub(crate) use std_io::ConsoleIo;
+pub use std_io::StdIo;
+pub use ui::Ui;
 
 #[cfg(test)]
 mod test_common;

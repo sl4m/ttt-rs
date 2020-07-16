@@ -1,4 +1,4 @@
-use crate::std_io::StdIo;
+use crate::StdIo;
 use std::io;
 
 pub(crate) struct ConsoleIo;

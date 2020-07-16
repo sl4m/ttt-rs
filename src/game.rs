@@ -1,8 +1,4 @@
-use crate::board::Board;
-use crate::mark::Mark;
-use crate::player::{computer::Computer, console::human::Human, Player};
-use crate::std_io::{console_io::ConsoleIo, StdIo};
-use crate::ui::Ui;
+use crate::{Board, Computer, ConsoleIo, Human, Mark, Player, StdIo, Ui};
 use core::fmt::Debug;
 
 #[derive(Debug)]

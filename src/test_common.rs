@@ -1,5 +1,4 @@
-use crate::board::Board;
-use crate::std_io::StdIo;
+use crate::{Board, StdIo};
 use std::cell::RefCell;
 
 pub(crate) struct DoubleStdIo<'a> {

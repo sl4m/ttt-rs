@@ -1,8 +1,11 @@
-pub mod computer;
-pub mod console;
+mod computer;
+mod console;
 
-use crate::board::Board;
-use crate::mark::Mark;
+pub use computer::Computer;
+pub use console::Human;
+
+use crate::Board;
+use crate::Mark;
 
 pub trait Player {
     fn get_move(&self, board: &Board) -> usize;

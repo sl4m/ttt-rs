@@ -1,8 +1,4 @@
-use crate::board::Board;
-use crate::mark::Mark;
-use crate::player::Player;
-use crate::std_io::{console_io::ConsoleIo, StdIo};
-use crate::ui::Ui;
+use crate::{Board, ConsoleIo, Mark, Player, StdIo, Ui};
 
 #[derive(Debug)]
 pub struct Human<T: StdIo> {

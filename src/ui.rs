@@ -1,4 +1,4 @@
-use crate::std_io::{console_io::ConsoleIo, StdIo};
+use crate::{ConsoleIo, StdIo};
 
 #[derive(Debug)]
 pub struct Ui<T: StdIo> {

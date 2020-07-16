@@ -1,7 +1,8 @@
-use crate::board::Board;
-use crate::mark::Mark;
+use crate::{Board, Mark};
 
-pub mod negamax;
+mod negamax;
+
+pub(crate) use negamax::Negamax;
 
 pub trait Ai {
     fn search(&self, board: &Board, mark: Mark) -> usize;
