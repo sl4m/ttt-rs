@@ -55,6 +55,7 @@ mod tests {
 
     impl Ai for DoubleAi {
         fn search(&self, _board: &Board, _mark: Mark) -> usize {
+            #[allow(clippy::unwrap_used)]
             self.moves.borrow_mut().pop().unwrap()
         }
     }

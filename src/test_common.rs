@@ -15,6 +15,7 @@ impl<'a> DoubleStdIo<'a> {
     }
 
     pub fn pop_output(&mut self) -> String {
+        #[allow(clippy::unwrap_used)]
         self.outputs.borrow_mut().pop().unwrap()
     }
 }
@@ -25,6 +26,7 @@ impl StdIo for DoubleStdIo<'_> {
     }
 
     fn prompt(&self) -> String {
+        #[allow(clippy::unwrap_used)]
         self.inputs.borrow_mut().pop().unwrap().to_owned()
     }
 }

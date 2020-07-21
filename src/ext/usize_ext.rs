@@ -25,15 +25,15 @@ mod tests {
 
     #[test]
     fn it_returns_the_approximate_sqrt_of_usize() {
-        assert_eq!(3, 9usize.sqrt());
-        assert_eq!(4, 16usize.sqrt());
-        assert_eq!(5, 25usize.sqrt());
+        assert_eq!(3, 9_usize.sqrt());
+        assert_eq!(4, 16_usize.sqrt());
+        assert_eq!(5, 25_usize.sqrt());
     }
 
     #[test]
     fn it_checks_if_num_is_perfect_square() {
-        assert_eq!(true, 9usize.is_perfect_sq());
-        assert_eq!(true, 16usize.is_perfect_sq());
-        assert_eq!(false, 24usize.is_perfect_sq());
+        assert_eq!(true, 9_usize.is_perfect_sq());
+        assert_eq!(true, 16_usize.is_perfect_sq());
+        assert_eq!(false, 24_usize.is_perfect_sq());
     }
 }

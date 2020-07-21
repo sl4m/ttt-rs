@@ -8,7 +8,7 @@
     clippy::missing_docs_in_private_items,
     clippy::missing_inline_in_public_items,
     clippy::must_use_candidate,
-    clippy::result_expect_used
+    clippy::expect_used
 )]
 
 mod ai;
