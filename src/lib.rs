@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 #![warn(missing_debug_implementations, rust_2018_idioms)]
 #![deny(clippy::all, clippy::pedantic, clippy::restriction)]
 #![allow(
